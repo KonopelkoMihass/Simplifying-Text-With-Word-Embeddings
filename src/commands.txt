@@ -1,0 +1,2 @@
+javac ie/atu/sw/ConsoleColour.java ie/atu/sw/Runner.java
+java ie/atu/sw/Runner
