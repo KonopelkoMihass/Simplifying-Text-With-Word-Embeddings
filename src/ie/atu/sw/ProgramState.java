@@ -3,10 +3,6 @@ package ie.atu.sw;
 public enum ProgramState {
     // Indicates that the program was just launched and user has not performed anything.
     JUST_LAUNCHED,
-    // Indicates that user has loaded a first file, be it embeddings or Google 1000 Words.
-    LOADED_FIRST_FILE,
-    // Indicates that both files are loaded, and that user can progress to the next step of the program.
-    LOADED_ALL_FILES,
     // Indicates that user has selected where to output result
     // OR/AND
     // Indicates that program is ready to start simplification
@@ -22,3 +18,4 @@ public enum ProgramState {
     // Indicates that user requested the end of the program.
     STOP_PROGRAM
 }
+

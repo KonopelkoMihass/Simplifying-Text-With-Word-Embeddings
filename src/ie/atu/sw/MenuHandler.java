@@ -1,8 +1,9 @@
 package ie.atu.sw;
 
+import java.io.BufferedReader;
 import java.io.IOException;
-
-record FilePathsStorage(String embedding, String google1000Words, String output) {}
+import java.io.File;
+import java.io.InputStreamReader;
 
 public class MenuHandler {
     // Will store the user response to the menu as a character.  Default is a space.
@@ -11,12 +12,16 @@ public class MenuHandler {
     // Will store current program state.
     ProgramState currenProgramState;
 
-    // Stores file paths of different essential files  as strings.
-    FilePathsStorage filePaths;
+    String embeddingFilePath;
+    String google1000WordsFilePath;
+    String outputFilePath;
+
 
     public MenuHandler() {
         currenProgramState = ProgramState.JUST_LAUNCHED;
-        filePaths = new FilePathsStorage("","","/out.txt");
+        embeddingFilePath = "";
+        google1000WordsFilePath = "";
+        outputFilePath = "./out.txt";
     }
 
 
@@ -29,18 +34,19 @@ public class MenuHandler {
         System.out.println("*             Virtual Threaded Text Simplifier             *");
         System.out.println("*                                                          *");
         System.out.println("************************************************************");
-        System.out.println("(1) Specify Embeddings File");
-        System.out.println("(2) Specify Google 1000 File");
-        System.out.println("(3) Specify an Output File (default: ./out.txt)");
-        System.out.println("(4) Execute, Analyse and Report");
-        System.out.println("(?) Quit");
+
     }
 
     public void showSelector() {
         //Output a menu of options and solicit text from the user
         System.out.print(ConsoleColour.BLACK_BOLD_BRIGHT);
-        System.out.print("Select Option [1-4]>");
-        System.out.println();
+        System.out.println("Select Option:");
+        System.out.println("(1) Specify Embeddings File");
+        System.out.println("(2) Specify Google 1000 File");
+        System.out.println("(3) Specify an Output File (default: ./out.txt)");
+        System.out.println("(4) Execute, Analyse and Report");
+        System.out.println("(q) Quit");
+
     }
 
     public boolean updateMenu() {
@@ -56,20 +62,16 @@ public class MenuHandler {
     }
 
     void processUserResponse()  {
-        // Get response to the menu prompt, then handle it. Parse it as a character,
-        // which will always take the first letter of a string.
-        try { userResponse = (char) System.in.read(); }
-        catch (IOException e) { throw new RuntimeException(e); }
-
+        userResponse = getUserInput();
         switch (userResponse) {
             case '1':
-                specifyEmbeddingsFile();
+                embeddingFilePath = requestFilepath("GloVe Embedding File");
                 break;
             case '2':
-                specifyGoogle1000File();
+                google1000WordsFilePath = requestFilepath("Google 1000 Words File");
                 break;
             case '3':
-                specifyOutputFile();
+                outputFilePath = requestFilepath("Output File");
                 break;
             case '4':
                 runProgram();
@@ -80,23 +82,66 @@ public class MenuHandler {
         }
     }
 
-    void specifyEmbeddingsFile() {
-
-    }
-
-    void specifyGoogle1000File() {
-
-    }
-
-    void specifyOutputFile() {
-
-    }
     void runProgram() {
+        if (!checkIfAllFilePathsFilled()) return;
+        System.out.println(embeddingFilePath);
+        System.out.println(google1000WordsFilePath);
+        System.out.println(outputFilePath);
+    }
 
+
+    char getUserInput() {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            return reader.readLine().charAt(0);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+    boolean checkIfAllFilePathsFilled() {
+        boolean result = true;
+        if (embeddingFilePath.isEmpty()) {
+            System.out.println("Filepath is empty for the GloVe Embedding File");
+            result = false;
+        }
+        if (google1000WordsFilePath.isEmpty()) {
+            System.out.println("Filepath is empty for the Google 1000 Words File");
+            result = false;
+        }
+        if (outputFilePath.isEmpty()) {
+            System.out.println("Filepath is empty for the Output File");
+            result = false;
+        }
+        return result;
     }
 
     void quit() {
         currenProgramState = ProgramState.STOP_PROGRAM;
+    }
+
+    String requestFilepath(String nameOfDesiredFile){
+        boolean runTillSuccessOrAbort = true;
+        String filepath = "";
+
+        while (runTillSuccessOrAbort) {
+            System.out.print("Enter the correct directory for the " + nameOfDesiredFile + " or type 'q' to cancel: ");
+            System.out.println();
+            filepath = System.console().readLine();
+
+            if (filepath.equals("q")) {
+                runTillSuccessOrAbort  = false;
+                filepath = "";
+            }
+
+            File f = new File(filepath);
+            if(f.exists() && !f.isDirectory()) {
+                runTillSuccessOrAbort = false;
+            }
+
+        }
+        return filepath;
     }
 
 }
