@@ -6,9 +6,11 @@ public class Runner {
 		MenuHandler menuHandler = new MenuHandler();
 		menuHandler.showMenuScreen();
 
+		while (menuHandler.updateMenu()) {
 
 
 
 
+		}
 	}
 }
